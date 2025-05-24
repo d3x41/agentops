@@ -14,17 +14,17 @@ more data than we already have, since the `Response` object is always passed to 
 from the `agents.tracing` module.
 
 TODO Calls to the OpenAI API are not available in this tracing context, so we may
-need to monkey-patch the `openai` from here to get that data. While we do have 
-separate instrumentation for the OpenAI API, in order to get it to nest with the 
+need to monkey-patch the `openai` from here to get that data. While we do have
+separate instrumentation for the OpenAI API, in order to get it to nest with the
 spans we create here, it's probably easier (or even required) that we incorporate
-that here as well. 
+that here as well.
 """
+
 from typing import Collection
 from opentelemetry.instrumentation.instrumentor import BaseInstrumentor  # type: ignore
 from agentops.logging import logger
 from agentops.instrumentation.openai_agents.processor import OpenAIAgentsProcessor
 from agentops.instrumentation.openai_agents.exporter import OpenAIAgentsExporter
-from agentops.instrumentation.openai_agents import LIBRARY_VERSION
 
 
 class OpenAIAgentsInstrumentor(BaseInstrumentor):
@@ -43,15 +43,6 @@ class OpenAIAgentsInstrumentor(BaseInstrumentor):
         tracer_provider = kwargs.get("tracer_provider")
 
         try:
-            # Check if Agents SDK is available
-            try:
-                import agents  # type: ignore
-
-                logger.debug(f"OpenAI Agents SDK detected with version: {LIBRARY_VERSION}")
-            except ImportError as e:
-                logger.debug(f"OpenAI Agents SDK import failed: {e}")
-                return
-
             self._exporter = OpenAIAgentsExporter(tracer_provider=tracer_provider)
             self._processor = OpenAIAgentsProcessor(
                 exporter=self._exporter,

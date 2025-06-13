@@ -5,13 +5,24 @@ interactions, conversation flows, and tool usage while focusing on summary-level
 than individual message exchanges.
 """
 
-# Version string and package info
+from agentops.logging import logger
+
+
+def get_version() -> str:
+    """Get the version of the AG2 package, or 'unknown' if not found"""
+    try:
+        from importlib.metadata import version
+
+        return version("ag2")
+    except ImportError:
+        logger.debug("Could not find AG2 version")
+        return "unknown"
+
+
 LIBRARY_NAME = "ag2"
-LIBRARY_VERSION = "0.3.2"  # Update based on actual version requirement
+LIBRARY_VERSION: str = get_version()
 
-from typing import Collection
-from opentelemetry.instrumentation.instrumentor import BaseInstrumentor
+# Import after defining constants to avoid circular imports
+from agentops.instrumentation.ag2.instrumentor import AG2Instrumentor  # noqa: E402
 
-from agentops.instrumentation.ag2.instrumentor import AG2Instrumentor
-
-__all__ = ["AG2Instrumentor"]
+__all__ = ["AG2Instrumentor", "LIBRARY_NAME", "LIBRARY_VERSION"]

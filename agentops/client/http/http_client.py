@@ -1,11 +1,10 @@
-from typing import Callable, Dict, Optional
+from typing import Dict, Optional
 
 import requests
 
 from agentops.client.http.http_adapter import BaseHTTPAdapter
-from agentops.exceptions import AgentOpsApiJwtExpiredException, ApiServerException
 from agentops.logging import logger
-from agentops.semconv import ResourceAttributes
+from agentops.helpers.version import get_agentops_version
 
 
 class HttpClient:
@@ -38,9 +37,10 @@ class HttpClient:
                     "Connection": "keep-alive",
                     "Keep-Alive": "timeout=10, max=1000",
                     "Content-Type": "application/json",
+                    "User-Agent": f"agentops-python/{get_agentops_version() or 'unknown'}",
                 }
             )
-
+            logger.debug(f"Agentops version: agentops-python/{get_agentops_version() or 'unknown'}")
         return cls._session
 
     # @classmethod

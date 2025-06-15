@@ -8,8 +8,8 @@ from typing import Any, Dict, Optional, Protocol
 
 import requests
 
-from agentops.client.api.types import AuthTokenResponse
 from agentops.client.http.http_client import HttpClient
+from agentops.helpers.version import get_agentops_version
 
 
 class TokenFetcher(Protocol):
@@ -52,6 +52,7 @@ class BaseApiClient:
             "Content-Type": "application/json",
             "Connection": "keep-alive",
             "Keep-Alive": "timeout=10, max=1000",
+            "User-Agent": f"agentops-python/{get_agentops_version() or 'unknown'}",
         }
 
         if custom_headers:

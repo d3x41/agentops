@@ -7,7 +7,7 @@ class SpanAttributes:
     #
     # TODO: There is an important deviation from the OpenTelemetry spec in our current implementation.
     # In our OpenAI instrumentation, we're mapping from source→target keys incorrectly in the _token_type function
-    # in shared/__init__.py. According to our established pattern, mapping dictionaries should consistently use 
+    # in shared/__init__.py. According to our established pattern, mapping dictionaries should consistently use
     # target→source format (where keys are target attributes and values are source fields).
     #
     # Current implementation (incorrect):
@@ -20,7 +20,7 @@ class SpanAttributes:
     #     "input": "prompt_tokens",  # target → source
     #     "output": "completion_tokens"
     # }
-    # 
+    #
     # Then we have to adapt code using the function to handle the inverted mapping.
 
     # System
@@ -65,6 +65,7 @@ class SpanAttributes:
     LLM_USAGE_CACHE_READ_INPUT_TOKENS = "gen_ai.usage.cache_read_input_tokens"
     LLM_USAGE_REASONING_TOKENS = "gen_ai.usage.reasoning_tokens"
     LLM_USAGE_STREAMING_TOKENS = "gen_ai.usage.streaming_tokens"
+    LLM_USAGE_TOOL_COST = "gen_ai.usage.total_cost"
 
     # Message attributes
     # see ./message.py for message-related attributes
@@ -77,6 +78,7 @@ class SpanAttributes:
 
     # OpenAI specific
     LLM_OPENAI_RESPONSE_SYSTEM_FINGERPRINT = "gen_ai.openai.system_fingerprint"
+    LLM_OPENAI_RESPONSE_INSTRUCTIONS = "gen_ai.openai.instructions"
     LLM_OPENAI_API_BASE = "gen_ai.openai.api_base"
     LLM_OPENAI_API_VERSION = "gen_ai.openai.api_version"
     LLM_OPENAI_API_TYPE = "gen_ai.openai.api_type"
@@ -86,7 +88,13 @@ class SpanAttributes:
     AGENTOPS_ENTITY_INPUT = "agentops.entity.input"
     AGENTOPS_SPAN_KIND = "agentops.span.kind"
     AGENTOPS_ENTITY_NAME = "agentops.entity.name"
+    AGENTOPS_DECORATOR_SPEC = "agentops.{entity_kind}.spec"
+    AGENTOPS_DECORATOR_INPUT = "agentops.{entity_kind}.input"
+    AGENTOPS_DECORATOR_OUTPUT = "agentops.{entity_kind}.output"
 
     # Operation attributes
     OPERATION_NAME = "operation.name"
     OPERATION_VERSION = "operation.version"
+
+    # Session/Trace attributes
+    AGENTOPS_SESSION_END_STATE = "agentops.session.end_state"

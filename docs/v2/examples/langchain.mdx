@@ -1,12 +1,10 @@
 ---
-title: 'LangChain Example'
-description: 'Using the LangChain Callback Handler'
-mode: "wide"
+title: 'LangChain'
+description: 'AgentOps Langchain Agent Implementation'
 ---
-_View Notebook on <a href={'https://github.com/AgentOps-AI/agentops/blob/main/examples/langchain_examples.ipynb'} target={'_blank'}>Github</a>_
+{/*  SOURCE_FILE: examples/langchain/langchain_examples.ipynb  */}
 
-
-{/*  SOURCE_FILE: examples/langchain_examples/langchain_examples.ipynb  */}
+_View Notebook on <a href={'https://github.com/AgentOps-AI/agentops/blob/main/examples/langchain/langchain_examples.ipynb'} target={'_blank'}>Github</a>_
 
 # AgentOps Langchain Agent Implementation
 
@@ -15,12 +13,19 @@ Using AgentOps monitoring with Langchain is simple. We've created a LangchainCal
 First let's install the required packages
 
 
-```python
-%pip install langchain==0.2.9
-%pip install langchain_openai
-%pip install -U agentops
-%pip install -U python-dotenv
-```
+
+## Installation
+<CodeGroup>
+  ```bash pip
+  pip install agentops langchain langchain_openai python-dotenv
+  ```
+  ```bash poetry
+  poetry add agentops langchain langchain_openai python-dotenv
+  ```
+  ```bash uv
+  uv add agentops langchain langchain_openai python-dotenv
+  ```
+</CodeGroup>
 
 Then import them
 
@@ -37,7 +42,9 @@ The only difference with using AgentOps is that we'll also import this special C
 
 
 ```python
-from agentops.integration.callbacks.langchain import LangchainCallbackHandler
+from agentops.integration.callbacks.langchain import (
+    LangchainCallbackHandler as AgentOpsLangchainCallbackHandler,
+)
 ```
 
 Next, we'll set our API keys. There are several ways to do this, the code below is just the most foolproof way for the purposes of this notebook. It accounts for both users who use environment variables and those who just want to set the API Key here in this notebook.
@@ -51,8 +58,8 @@ Next, we'll set our API keys. There are several ways to do this, the code below 
 
 ```python
 load_dotenv()
-AGENTOPS_API_KEY = os.environ.get("AGENTOPS_API_KEY")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+os.environ["AGENTOPS_API_KEY"] = os.getenv("AGENTOPS_API_KEY", "your_api_key_here")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY", "your_openai_api_key_here")
 ```
 
 This is where AgentOps comes into play. Before creating our LLM instance via Langchain, first we'll create an instance of the AO LangchainCallbackHandler. After the handler is initialized, a session will be recorded automatically.
@@ -62,13 +69,9 @@ Pass in your API key, and optionally any tags to describe this session for easie
 
 
 ```python
-agentops_handler = LangchainCallbackHandler(
-    api_key=AGENTOPS_API_KEY, tags=["Langchain Example"]
-)
+agentops_handler = AgentOpsLangchainCallbackHandler(tags=["Langchain Example", "agentops-example"])
 
-llm = ChatOpenAI(
-    openai_api_key=OPENAI_API_KEY, callbacks=[agentops_handler], model="gpt-3.5-turbo"
-)
+llm = ChatOpenAI(callbacks=[agentops_handler], model="gpt-3.5-turbo")
 
 # You must pass in a callback handler to record your agent
 llm.callbacks = [agentops_handler]
@@ -125,16 +128,14 @@ agent_executor = AgentExecutor(agent=agent, tools=tools)
 
 
 ```python
-agent_executor.invoke(
-    {"input": "What comedies are playing?"}, config={"callback": [agentops_handler]}
-)
+agent_executor.invoke({"input": "What comedies are playing?"}, config={"callback": [agentops_handler]})
 ```
 
 ## Check your session
-Finally, check your run on [AgentOps](https://app.agentops.ai)
+Finally, check your run on [AgentOps](https://app.agentops.ai). You will see a session recorded with the LLM calls and tool usage.
 
-Now if we look in the AgentOps dashboard, you will see a session recorded with the LLM calls and tool usage.
 
-## Langchain v0 Example
-
-This langchain version is out of date and support is being deprecated. You can find the example notebook [here](https://github.com/agentops-ai/agentops/blob/main/examples/langchain_examples/langchain_v0_example.ipynb).
+<script type="module" src="/scripts/github_stars.js"></script>
+<script type="module" src="/scripts/scroll-img-fadein-animation.js"></script>
+<script type="module" src="/scripts/button_heartbeat_animation.js"></script>
+<script type="module" src="/scripts/adjust_api_dynamically.js"></script>

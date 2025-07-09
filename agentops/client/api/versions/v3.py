@@ -4,14 +4,11 @@ V3 API client for the AgentOps API.
 This module provides the client for the V3 version of the AgentOps API.
 """
 
-from typing import Any, Dict, List, Optional
-
-import requests
-
 from agentops.client.api.base import BaseApiClient
 from agentops.client.api.types import AuthTokenResponse
 from agentops.exceptions import ApiServerException
 from agentops.logging import logger
+
 
 class V3Client(BaseApiClient):
     """Client for the AgentOps V3 API"""
@@ -33,28 +30,26 @@ class V3Client(BaseApiClient):
 
         r = self.post(path, data, headers)
 
-        try:
-            if r.status_code != 200:
-                error_msg = f"Authentication failed: {r.status_code}"
-                try:
-                    error_data = r.json()
-                    if "error" in error_data:
-                        error_msg = f"{error_data['error']}"
-                except Exception:
-                    pass
-                raise ApiServerException(error_msg)
-
+        if r.status_code != 200:
+            error_msg = f"Authentication failed: {r.status_code}"
             try:
-                jr = r.json()
-                token = jr.get("token")
-                if not token:
-                    raise ApiServerException("No token in authentication response")
+                error_data = r.json()
+                if "error" in error_data:
+                    error_msg = f"{error_data['error']}"
+            except Exception:
+                pass
+            logger.error(f"{error_msg} - Perhaps an invalid API key?")
+            raise ApiServerException(error_msg)
 
-                return jr
-            except Exception as e:
-                raise ApiServerException(f"Failed to process authentication response: {str(e)}")
+        try:
+            jr = r.json()
+            token = jr.get("token")
+            if not token:
+                raise ApiServerException("No token in authentication response")
+
+            return jr
         except Exception as e:
-            logger.error(f"{str(e)} - Perhaps an invalid API key?")
-            return None
+            logger.error(f"Failed to process authentication response: {str(e)}")
+            raise ApiServerException(f"Failed to process authentication response: {str(e)}")
 
     # Add V3-specific API methods here
